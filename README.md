@@ -16,3 +16,6 @@ bash <(curl -sL https://raw.githubusercontent.com/2amir563/khodamneveshtammyuser
 ```
 curl -sL https://raw.githubusercontent.com/2amir563/khodamneveshtammyusersub/main/install.sh | sudo bash -s -- uninstall
 ```
+برای استفاده از این اسکریپت فایل Create create_config.ps1 را در ویندوز دانلود کرده و انرا به وسیله پاور شل اجرا میکنیم و خروجی را در سرور در قسمت زیر جایگزین میکنیم
+
+و 
