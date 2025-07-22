@@ -11,6 +11,12 @@
 bash <(curl -sL https://raw.githubusercontent.com/2amir563/khodamneveshtammyusersub/main/install.sh)
 ```
 ---
+
+
+
+```
+curl -sL https://raw.githubusercontent.com/2amir563/khodamneveshtammyusersub/main/install.sh | sudo bash -s -- changeport
+```
 برای ان اینستال uninstall و حذف اسکریپت از سرور باید کد دستوری زیر را بزنیم
 
 ```
