@@ -6,7 +6,6 @@ After=network.target
 User=root
 Group=www-data
 WorkingDirectory=/opt/sub_server/
-# به جای پورت ثابت، از یک جایگزین (Placeholder) استفاده می‌کنیم
 ExecStart=/usr/bin/gunicorn --workers 3 --bind 0.0.0.0:PORT_PLACEHOLDER wsgi:app
 Restart=always
 
