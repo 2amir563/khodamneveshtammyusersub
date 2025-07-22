@@ -1,13 +1,13 @@
 #!/bin/bash
-# A multi-purpose script for installing or uninstalling the subscription server.
+# A multi-purpose script for installing, uninstalling, or changing the port of the subscription server.
 # Usage:
 #   - To install: ./install.sh install  (or just ./install.sh)
 #   - To uninstall: ./install.sh uninstall
+#   - To change port: ./install.sh changeport
 
 set -e
 
 # --- Variables ---
-# آدرس ریپازیتوری گیت‌هاب خود را اینجا وارد کنید
 GITHUB_REPO_URL="https://raw.githubusercontent.com/2amir563/khodamneveshtammyusersub/main"
 INSTALL_DIR="/opt/sub_server"
 SERVICE_NAME="subscription"
@@ -63,7 +63,11 @@ function install_service() {
 function uninstall_service() {
     echo ">>> Starting Uninstallation Process..."
 
-    # هوشمندانه پورت را از فایل سرویس پیدا می‌کند
+    if [ ! -f "$SERVICE_FILE" ]; then
+        echo "--> Service file not found. It seems the service is not installed."
+        exit 0
+    fi
+
     PORT_TO_CLOSE=$(grep -oP '(?<=--bind 0.0.0.0:)[0-9]+' $SERVICE_FILE || echo "")
 
     echo "--> Stopping and disabling the systemd service..."
@@ -94,16 +98,64 @@ function uninstall_service() {
     echo "========================================="
 }
 
-function main() {
-    if [[ -z "$1" || "$1" == "install" ]]; then
-        install_service
-    elif [[ "$1" == "uninstall" ]]; then
-        uninstall_service
-    else
-        echo "Error: Invalid argument."
-        echo "Usage: $0 {install|uninstall}"
+function change_port() {
+    echo ">>> Starting Port Change Process..."
+
+    if [ ! -f "$SERVICE_FILE" ]; then
+        echo "--> Service file not found. You must install the service first."
         exit 1
     fi
+
+    CURRENT_PORT=$(grep -oP '(?<=--bind 0.0.0.0:)[0-9]+' $SERVICE_FILE || echo "")
+    if [[ -z "$CURRENT_PORT" ]]; then
+        echo "--> Could not detect the current port. Aborting."
+        exit 1
+    fi
+    echo "--> Current port is: $CURRENT_PORT"
+
+    read -p "Please enter the NEW port you want to use: " NEW_PORT
+    if [[ -z "$NEW_PORT" ]]; then
+        echo "--> No new port entered. Aborting."
+        exit 1
+    fi
+
+    echo "--> Updating service file to use port $NEW_PORT..."
+    sudo sed -i "s/--bind 0.0.0.0:$CURRENT_PORT/--bind 0.0.0.0:$NEW_PORT/g" "$SERVICE_FILE"
+
+    echo "--> Updating firewall rules..."
+    sudo ufw delete allow $CURRENT_PORT/tcp
+    sudo ufw allow $NEW_PORT/tcp
+    echo "Firewall updated."
+
+    echo "--> Reloading and restarting the service..."
+    sudo systemctl daemon-reload
+    sudo systemctl restart ${SERVICE_NAME}.service
+
+    echo ""
+    echo "========================================="
+    echo "===      Port Change Complete!        ==="
+    echo "========================================="
+    echo "Service has been successfully moved from port $CURRENT_PORT to $NEW_PORT."
+    echo "Don't forget to update your subscription links with the new port!"
+}
+
+function main() {
+    case "$1" in
+        install|'')
+            install_service
+            ;;
+        uninstall)
+            uninstall_service
+            ;;
+        changeport)
+            change_port
+            ;;
+        *)
+            echo "Error: Invalid argument."
+            echo "Usage: $0 {install|uninstall|changeport}"
+            exit 1
+            ;;
+    esac
 }
 
 # Run the main function
