@@ -22,6 +22,31 @@ curl -sL https://raw.githubusercontent.com/2amir563/khodamneveshtammyusersub/mai
 ```
 curl -sL https://raw.githubusercontent.com/2amir563/khodamneveshtammyusersub/main/install.sh | sudo bash -s -- uninstall
 ```
+
+فایل sub_server.py را با ویرایشگر باز کنید:
+
+Bash
+
+
+```
+nano /opt/sub_server/sub_server.py
+```
+
+کل محتوای links = { ... } قدیمی را پاک کرده و این کد جدید را به جای آن کپی و پیست کنید.
+
+فایل را ذخیره کنید (Ctrl + X سپس Y و Enter).
+
+سرویس را ری‌استارت کنید تا تغییرات اعمال شوند (این مرحله بسیار مهم است):
+
+Bash
+
+
+```
+sudo systemctl restart subscription
+```
+پس از این مراحل، سرور شما با لیست کاربران جدید به‌روز شده و همه چیز بدون هیچ اروری به درستی کار خواهد کرد.
+..............................................................................................
+
 برای استفاده از این اسکریپت فایل Create create_config.ps1 را در ویندوز دانلود کرده و انرا به وسیله پاور شل اجرا میکنیم و خروجی را در سرور در قسمت زیر جایگزین میکنیم
 
 # فایل دوم: sub_server.py (کد اصلی برنامه سرور)
