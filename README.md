@@ -12,6 +12,10 @@ bash <(curl -sL https://raw.githubusercontent.com/2amir563/khodamneveshtammyuser
 ```
 ---
 
+برای غیر فعال کردن فایروال
+```
+sudo ufw disable
+```
 
 
 ```
