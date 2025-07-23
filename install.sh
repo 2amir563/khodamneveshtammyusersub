@@ -1,6 +1,6 @@
 #!/bin/bash
 # A multi-purpose script for installing, uninstalling, or changing the port of the subscription server.
-# Version 12.3: Uses APT to install Python packages, complying with PEP 668 on modern systems.
+# Version 12.4: Uses APT to install Python packages, complying with PEP 668 on modern systems.
 
 set -e
 
@@ -28,7 +28,8 @@ function install_service() {
     echo "--> Updating system and installing dependencies..."
     sudo apt-get update
     # --- تغییر اصلی ۱: نصب تمام پکیج‌ها با apt ---
-    sudo apt-get install -y python3-flask python3-gunicorn python3-pip ufw
+    # این روش با اوبونتو ۲۰، ۲۲ و ۲۴ سازگار است
+    sudo apt-get install -y python3-flask python3-gunicorn ufw
 
     echo "--> Creating installation directory at $INSTALL_DIR..."
     sudo mkdir -p $INSTALL_DIR
@@ -43,7 +44,12 @@ function install_service() {
     sudo sed -i "s|WorkingDirectory=/opt/sub_server/|WorkingDirectory=$INSTALL_DIR/|g" "$SERVICE_FILE"
     # --- تغییر اصلی ۲: استفاده از مسیر صحیح gunicorn ---
     # مسیر gunicorn نصب شده با apt همیشه استاندارد است و معمولاً gunicorn3 نام دارد
-    sudo sed -i "s|ExecStart=/usr/bin/gunicorn|ExecStart=/usr/bin/gunicorn3|g" "$SERVICE_FILE"
+    # این دستور هم با نسخه های قدیمی و هم جدید سازگار است
+    if [ -f /usr/bin/gunicorn3 ]; then
+        sudo sed -i "s|ExecStart=/usr/bin/gunicorn|ExecStart=/usr/bin/gunicorn3|g" "$SERVICE_FILE"
+    else
+        sudo sed -i "s|ExecStart=/usr/bin/gunicorn|ExecStart=/usr/bin/gunicorn|g" "$SERVICE_FILE"
+    fi
 
     echo "--> Configuring firewall (UFW)..."
     echo "y" | sudo ufw reset
