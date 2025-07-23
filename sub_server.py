@@ -1,4 +1,5 @@
 import base64
+# --- اصلاحیه اصلی اینجاست: کلمه request اضافه شده است ---
 from flask import Flask, Response, request
 
 app = Flask(__name__)
